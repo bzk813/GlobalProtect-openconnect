@@ -50,6 +50,14 @@ pub(crate) struct ConnectArgs {
   #[arg(long, help = "Read the password from standard input")]
   pub(super) passwd_on_stdin: bool,
 
+  #[arg(
+    long,
+    help = "Answer gateway MFA challenges from standard input: each challenge prints a JSON line \
+            {\"event\":\"mfa_challenge\",\"message\":...,\"attempt\":N} to stdout and the next stdin \
+            line is sent as the answer"
+  )]
+  pub(super) mfa_on_stdin: bool,
+
   #[arg(long, help = "Read the gpauth authentication result from standard input")]
   pub(super) cookie_on_stdin: bool,
 

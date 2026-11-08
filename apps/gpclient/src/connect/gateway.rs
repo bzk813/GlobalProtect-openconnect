@@ -352,6 +352,7 @@ impl ConnectHandler<'_> {
     let cancellation = self.cancellation.clone();
     let internal = gateway_context.is_some_and(|context| context.kind() == gpapi::gateway::GatewayKind::Internal);
     let mut client = GatewayLoginClient::new(gateway, gp_params)?;
+    let mut mfa_attempt = 0;
 
     loop {
       self.check_cancelled()?;
@@ -383,7 +384,13 @@ impl ConnectHandler<'_> {
           });
         }
         GatewayLogin::Mfa(message, input_str) => {
-          let otp = Text::new(&message).prompt()?;
+          mfa_attempt += 1;
+          let otp = if self.args.mfa_on_stdin {
+            info!("Gateway MFA challenge #{mfa_attempt}, reading the answer from standard input");
+            super::mfa::answer_challenge(&mut std::io::stdin().lock(), &mut std::io::stdout(), &message, mfa_attempt)?
+          } else {
+            Text::new(&message).prompt()?
+          };
           client.respond_mfa(&input_str, &otp);
 
           info!("Retrying gateway login with MFA...");
