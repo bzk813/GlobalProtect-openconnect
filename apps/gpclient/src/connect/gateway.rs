@@ -387,7 +387,12 @@ impl ConnectHandler<'_> {
           mfa_attempt += 1;
           let otp = if self.args.mfa_on_stdin {
             info!("Gateway MFA challenge #{mfa_attempt}, reading the answer from standard input");
-            super::mfa::answer_challenge(&mut std::io::stdin().lock(), &mut std::io::stdout(), &message, mfa_attempt)?
+            super::mfa::answer_challenge(
+              &mut std::io::stdin().lock(),
+              &mut std::io::stdout(),
+              &message,
+              mfa_attempt,
+            )?
           } else {
             Text::new(&message).prompt()?
           };

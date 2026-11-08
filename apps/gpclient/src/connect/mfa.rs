@@ -35,7 +35,9 @@ pub(super) fn answer_challenge<R: BufRead, W: Write>(
   output.flush()?;
 
   let mut line = String::new();
-  let read = input.read_line(&mut line).context("Failed to read the MFA answer from standard input")?;
+  let read = input
+    .read_line(&mut line)
+    .context("Failed to read the MFA answer from standard input")?;
   if read == 0 {
     bail!("Standard input closed while waiting for the MFA answer");
   }
